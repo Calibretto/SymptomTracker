@@ -1,5 +1,5 @@
 //
-//  SelectSeverityRow.swift
+//  SelectBristolScaleRow.swift
 //  Symptom Tracker
 //
 //  Created by Brian Hackett on 07/04/2026.
@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-struct SelectSeverityRow: View {
-    @Binding var value: UInt
+struct SelectBristolScaleRow: View {
+    @Binding var value: BristolScale
 
     var body: some View {
         GridRow {
-            Text("Severity")
+            Text("Bristol Scale")
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 16)
             HStack {
-                Picker(selection: $value, label: Text("Severity")) {
-                    ForEach(UInt(1)...UInt(11), id: \.self) { severity in
-                        Text("\(severity)").tag(severity)
+                Picker(selection: $value, label: Text("Bristol Scale")) {
+                    ForEach(BristolScale.allCases, id: \.self) { scale in
+                        Text("\(scale.rawValue) - \(scale.name)").tag(scale)
                     }
                     // This stops the picker complaining about nil selection
-                    Divider().tag(UInt(99))
+                    Divider().tag(BristolScale.unknown)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -31,14 +31,14 @@ struct SelectSeverityRow: View {
     }
 }
 
-#Preview("Severity") {
-    @Previewable @State var severity: UInt = 5
+#Preview("Bristol Scale") {
+    @Previewable @State var scale: BristolScale = .normal_smooth
     let columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
 
     LazyVGrid(columns: columns) {
-        SelectSeverityRow(value: $severity)
+        SelectBristolScaleRow(value: $scale)
     }
 }

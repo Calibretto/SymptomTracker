@@ -35,9 +35,9 @@ struct SymptomRecordsView: View {
         List {
             let symptomsBySection = symptomsBySection()
             ForEach(symptomsBySection.keys.sorted(), id: \.self) { key in
-                if let symptomReocords = symptomsBySection[key] {
+                if let symptomRecords = symptomsBySection[key] {
                     Section(header: Text(key)) {
-                        ForEach(symptomReocords, id: \.self) { symptomRecord in
+                        ForEach(symptomRecords, id: \.self) { symptomRecord in
                             SymptomRecordListItem(record: symptomRecord)
                             .onTapGesture {
                                 selectedRecord = symptomRecord

@@ -13,7 +13,10 @@ struct Symptom_TrackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Food.self,
-            FoodRecord.self
+            FoodRecord.self,
+            Symptom.self,
+            SymptomRecord.self,
+            BowelMovementRecord.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

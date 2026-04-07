@@ -25,10 +25,11 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 24)
 
-            IngredientsView()
+            BowelsTabView()
                 .tabItem {
-                    Label("Ingredients", systemImage: "carrot")
+                    Label("Bowels", systemImage: "toilet")
                 }
+                .padding(.bottom, 24)
         }
     }
 }

@@ -1,26 +1,23 @@
 //
-//  SymptomRecordView.swift
+//  BowelRecordView.swift
 //  Symptom Tracker
 //
-//  Created by Brian Hackett on 06/04/2026.
+//  Created by Brian Hackett on 07/04/2026.
 //
 
 import SwiftData
 import SwiftUI
 
-struct SymptomRecordView: View {
+struct BowelRecordView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @State var symptoms: [Symptom]
 
     var modelContext: ModelContext
-    @State var record: SymptomRecord
+    @State var record: BowelMovementRecord
     private var isNew: Bool
 
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
-
-    @State private var showAddSymptom = false
 
     let columns: [GridItem] = [
         GridItem(.flexible()),
@@ -34,22 +31,16 @@ struct SymptomRecordView: View {
         modelContext = ModelContext(container)
         modelContext.autosaveEnabled = false
 
-        do {
-            symptoms = try modelContext.fetch(Symptom.fetchDescriptor)
-        } catch {
-            symptoms = []
-        }
-
         if let modelId {
-            if let record = modelContext.model(for: modelId) as? SymptomRecord {
+            if let record = modelContext.model(for: modelId) as? BowelMovementRecord {
                 self.record = record
                 isNew = false
             } else {
-                record = SymptomRecord.new(symptom: nil)
+                record = BowelMovementRecord.new()
                 isNew = true
             }
         } else {
-            record = SymptomRecord.new(symptom: nil)
+            record = BowelMovementRecord.new()
             isNew = true
         }
     }
@@ -79,7 +70,7 @@ struct SymptomRecordView: View {
                 Spacer()
             }
             .overlay {
-                Text("Symptom Record")
+                Text("Bowel Movement Record")
                     .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, 16)
@@ -90,10 +81,7 @@ struct SymptomRecordView: View {
 
             LazyVGrid(columns: columns) {
                 DateTimeRow(title: "Date", value: $record.timestamp)
-                SelectSymptomRow(value: $record.symptom, symptoms: $symptoms) {
-                    showAddSymptom = true
-                }
-                SelectSeverityRow(value: $record.severity)
+                SelectBristolScaleRow(value: $record.scale)
             }
 
             Spacer()
@@ -102,10 +90,10 @@ struct SymptomRecordView: View {
                 save()
             }, label: {
                 if isNew {
-                    Text("Add Symptom Record")
+                    Text("Add Bowel Movement Record")
                         .frame(maxWidth: .infinity)
                 } else {
-                    Text("Save Symptom Record")
+                    Text("Save Bowel Movement Record")
                         .frame(maxWidth: .infinity)
                 }
             })
@@ -118,33 +106,21 @@ struct SymptomRecordView: View {
         } message: {
             Text(errorMessage)
         }
-        .sheet(isPresented: $showAddSymptom) {
-            SymptomView(modelId: nil, in: modelContext.container) { newSymptom in
-                do {
-                    symptoms = try modelContext.fetch(Symptom.fetchDescriptor)
-                } catch {
-                    symptoms = []
-                }
-
-                record.symptom = modelContext.model(for: newSymptom.id) as? Symptom
-            }
-            .presentationDetents([.medium])
-        }
     }
 }
 
 #Preview("View Only - Existing", traits: .modifier(SampleData.shared)) {
-    @Previewable @Query var records: [SymptomRecord]
+    @Previewable @Query var records: [BowelMovementRecord]
 
-    SymptomRecordView(modelId: records[0].id, in: SampleData.shared.modelContainer)
+    BowelRecordView(modelId: records[0].id, in: SampleData.shared.modelContainer)
 }
 
 #Preview("View Only - New") {
-    SymptomRecordView(modelId: nil, in: SampleData.shared.modelContainer)
+    BowelRecordView(modelId: nil, in: SampleData.shared.modelContainer)
 }
 
 #Preview("Sheet - Existing", traits: .modifier(SampleData.shared)) {
-    @Previewable @Query var records: [SymptomRecord]
+    @Previewable @Query var records: [BowelMovementRecord]
     @Previewable @State var sheetOpen = false
 
     VStack {
@@ -152,13 +128,13 @@ struct SymptomRecordView: View {
         Button {
             sheetOpen = true
         } label: {
-            Text("Open Food Record Sheet")
+            Text("Open Bowel Movement Record Sheet")
         }
         .buttonStyle(.borderedProminent)
         Spacer()
     }
     .sheet(isPresented: $sheetOpen) {
-        SymptomRecordView(modelId: records[0].id, in: SampleData.shared.modelContainer)
+        BowelRecordView(modelId: records[0].id, in: SampleData.shared.modelContainer)
             .presentationDetents([.medium])
     }
 }

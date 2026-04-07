@@ -24,8 +24,10 @@ class SampleData {
             Food.self,
             FoodRecord.self,
             Symptom.self,
-            SymptomRecord.self
+            SymptomRecord.self,
+            BowelMovementRecord.self
         ])
+
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: true,
@@ -49,6 +51,10 @@ class SampleData {
 
         for symptomRecord in SampleSymptoms.symptomRecords() {
             context.insert(symptomRecord)
+        }
+
+        for bowelRecord in SampleBowelMovements.bowelMovementRecords() {
+            context.insert(bowelRecord)
         }
     }
 }

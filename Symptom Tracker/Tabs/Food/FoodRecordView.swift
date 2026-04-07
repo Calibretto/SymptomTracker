@@ -56,6 +56,9 @@ struct FoodRecordView: View {
 
     func save() {
         do {
+            if isNew {
+                modelContext.insert(foodRecord)
+            }
             try modelContext.save()
             dismiss()
         } catch {
