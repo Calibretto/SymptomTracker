@@ -23,6 +23,8 @@ class SampleData {
         let schema = Schema([
             Food.self,
             FoodRecord.self,
+            Symptom.self,
+            SymptomRecord.self
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
@@ -41,8 +43,12 @@ class SampleData {
     }
 
     private func insertSampleData() {
-        for mealRecord in SampleFoods.foodRecords() {
-            context.insert(mealRecord)
+        for foodRecord in SampleFoods.foodRecords() {
+            context.insert(foodRecord)
+        }
+
+        for symptomRecord in SampleSymptoms.symptomRecords() {
+            context.insert(symptomRecord)
         }
     }
 }
@@ -52,7 +58,6 @@ extension SampleData: PreviewModifier {
     static func makeSharedContext() throws -> ModelContainer {
         return Self.shared.modelContainer
     }
-
 
     func body(content: Content, context: ModelContainer) -> some View {
         content.modelContainer(context)

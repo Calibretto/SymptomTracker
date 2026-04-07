@@ -1,42 +1,42 @@
 //
-//  SelectFoodRow.swift
+//  SelectSymptomRow.swift
 //  Symptom Tracker
 //
-//  Created by Brian Hackett on 05/04/2026.
+//  Created by Brian Hackett on 07/04/2026.
 //
 
 import SwiftData
 import SwiftUI
 
-struct SelectFoodRow: View {
-    @Binding var value: Food?
-    @Binding var foods: [Food]
+struct SelectSymptomRow: View {
+    @Binding var value: Symptom?
+    @Binding var symptoms: [Symptom]
 
-    var addFoodAction: () -> Void
+    var addSymptomAction: () -> Void
 
     var body: some View {
         GridRow {
-            Text("Food")
+            Text("Symptom")
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 16)
             HStack {
-                if foods.count > 0 {
-                    Picker(selection: $value, label: Text("Food")) {
-                        ForEach(foods, id: \.self) { food in
-                            Text(food.name).tag(food)
+                if symptoms.count > 0 {
+                    Picker(selection: $value, label: Text("Symptom")) {
+                        ForEach(symptoms, id: \.self) { symptom in
+                            Text(symptom.name).tag(symptom)
                         }
                         // This stops the picker complaining about nil selection
-                        Divider().tag(Food?(nil))
+                        Divider().tag(Symptom?(nil))
                     }
                     .onAppear {
                         if value == nil {
-                            value = foods.first
+                            value = symptoms.first
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 Button {
-                    addFoodAction()
+                    addSymptomAction()
                 } label: {
                     Image(systemName: "plus.circle")
                 }
@@ -47,28 +47,28 @@ struct SelectFoodRow: View {
     }
 }
 
-#Preview("Foods") {
-    @Previewable @State var food: Food?
-    @Previewable @State var foods = SampleFoods.foods()
+#Preview("Symptoms") {
+    @Previewable @State var symptom: Symptom?
+    @Previewable @State var symptoms = SampleSymptoms.symptoms()
     let columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
 
     LazyVGrid(columns: columns) {
-        SelectFoodRow(value: $food, foods: $foods) {}
+        SelectSymptomRow(value: $symptom, symptoms: $symptoms) {}
     }
 }
 
-#Preview("No Foods") {
-    @Previewable @State var food: Food?
-    @Previewable @State var foods: [Food] = []
+#Preview("No Symptoms") {
+    @Previewable @State var symptom: Symptom?
+    @Previewable @State var symptoms: [Symptom] = []
     let columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
 
     LazyVGrid(columns: columns) {
-        SelectFoodRow(value: $food, foods: $foods) {}
+        SelectSymptomRow(value: $symptom, symptoms: $symptoms) {}
     }
 }

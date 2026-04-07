@@ -1,33 +1,33 @@
 //
-//  Food.swift
+//  Symptom.swift
 //  Symptom Tracker
 //
-//  Created by Brian Hackett on 26/03/2026.
+//  Created by Brian Hackett on 06/04/2026.
 //
 
 import Foundation
 import SwiftData
 
 @Model
-class Food {
+class Symptom {
     var name: String
-    
+
     init(name: String) {
         self.name = name
     }
 }
 
-extension Food {
-    static func empty() -> Food {
-        Food(name: "")
+extension Symptom {
+    static func empty() -> Symptom {
+        Symptom(name: "")
     }
 
     func isEmpty() -> Bool {
         name.isEmpty
     }
 
-    static var fetchDescriptor: FetchDescriptor<Food> {
-        let descriptor = FetchDescriptor<Food>(
+    static var fetchDescriptor: FetchDescriptor<Symptom> {
+        let descriptor = FetchDescriptor<Symptom>(
             predicate: #Predicate { $0.name.isEmpty == false },
             sortBy: [
                 .init(\.name)
@@ -38,17 +38,19 @@ extension Food {
 }
 
 @Model
-class FoodRecord {
-    var food: Food?
+class SymptomRecord {
+    var symptom: Symptom?
+    var severity: UInt
     var timestamp: Date
 
-    init(food: Food?, timestamp: Date) {
-        self.food = food
+    init(symptom: Symptom?, severity: UInt, timestamp: Date) {
+        self.symptom = symptom
+        self.severity = severity
         self.timestamp = timestamp
     }
 
     var name: String {
-        food?.name ?? "Unknown"
+        symptom?.name ?? "Unknown"
     }
 
     var dateKey: String {
@@ -71,27 +73,27 @@ class FoodRecord {
     }
 }
 
-extension FoodRecord {
-    static func new(food: Food?) -> FoodRecord {
-        FoodRecord(food: food, timestamp: Date())
+extension SymptomRecord {
+    static func new(symptom: Symptom?, severity: UInt = 5) -> SymptomRecord {
+        SymptomRecord(symptom: symptom, severity: severity, timestamp: Date())
     }
 
     func isEmpty() -> Bool {
-        food?.isEmpty() ?? true
+        symptom?.isEmpty() ?? true
     }
 
-    static func fetchAllWith(food: Food, modelContext: ModelContext) -> [FoodRecord] {
-        let foodId = food.id
-        let descriptor = FetchDescriptor<FoodRecord>(
-            predicate: #Predicate { $0.food?.id == foodId }
+    static func fetchAllWith(symptom: Symptom, modelContext: ModelContext) -> [SymptomRecord] {
+        let symptomId = symptom.id
+        let descriptor = FetchDescriptor<SymptomRecord>(
+            predicate: #Predicate { $0.symptom?.id == symptomId }
         )
 
-        let foodRecords: [FoodRecord]
+        let symptomRecords: [SymptomRecord]
         do {
-            foodRecords = try modelContext.fetch(descriptor)
+            symptomRecords = try modelContext.fetch(descriptor)
         } catch {
-            foodRecords = []
+            symptomRecords = []
         }
-        return foodRecords
+        return symptomRecords
     }
 }

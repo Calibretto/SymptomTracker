@@ -19,11 +19,12 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 24)
 
-            SymptomsView()
+            SymptomsTabView()
                 .tabItem {
                     Label("Symptoms", systemImage: "waveform.path.ecg.text.clipboard")
                 }
-            
+                .padding(.bottom, 24)
+
             IngredientsView()
                 .tabItem {
                     Label("Ingredients", systemImage: "carrot")
