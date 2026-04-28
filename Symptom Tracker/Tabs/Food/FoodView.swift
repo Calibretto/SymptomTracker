@@ -21,11 +21,6 @@ struct FoodView: View {
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
 
-    let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
     init(
         modelId: PersistentIdentifier?,
         in container: ModelContainer,
@@ -79,22 +74,28 @@ struct FoodView: View {
                 Text("Food")
                     .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 16)
             .padding(.top, 24)
             .padding(.bottom, 12)
 
             Spacer()
 
-            LazyVGrid(columns: columns) {
-                TextInputRow(
-                    title: "Name",
-                    message: "Enter a name...",
-                    value: $food.name
-                )
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Name")
+                    .fontWeight(.bold)
+                    .foregroundStyle(.secondary)
+                TextField("Enter a name...", text: $food.name)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
 
             Spacer()
-            
+
             Button(action: {
                 save()
             }, label: {
@@ -109,6 +110,7 @@ struct FoodView: View {
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 64)
         }
+        .padding(.horizontal, 16)
         .padding(.bottom, 24)
         .alert("Error", isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }
