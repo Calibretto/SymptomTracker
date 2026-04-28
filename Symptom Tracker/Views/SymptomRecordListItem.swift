@@ -22,7 +22,14 @@ struct SymptomRecordListItem: View {
                 .foregroundStyle(severityColor)
                 .fontWeight(.semibold)
                 .padding(.trailing, 8)
-            Text(record.name)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(record.name)
+                if let locationName = record.location?.name {
+                    Text(locationName)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
             Spacer()
             Text(record.time)
         }

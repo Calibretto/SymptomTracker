@@ -42,11 +42,13 @@ class SymptomRecord {
     var symptom: Symptom?
     var severity: UInt
     var timestamp: Date
+    var location: Location?
 
-    init(symptom: Symptom?, severity: UInt, timestamp: Date) {
+    init(symptom: Symptom?, severity: UInt, timestamp: Date, location: Location? = nil) {
         self.symptom = symptom
         self.severity = severity
         self.timestamp = timestamp
+        self.location = location
     }
 
     var name: String {
@@ -86,6 +88,21 @@ extension SymptomRecord {
         let symptomId = symptom.id
         let descriptor = FetchDescriptor<SymptomRecord>(
             predicate: #Predicate { $0.symptom?.id == symptomId }
+        )
+
+        let symptomRecords: [SymptomRecord]
+        do {
+            symptomRecords = try modelContext.fetch(descriptor)
+        } catch {
+            symptomRecords = []
+        }
+        return symptomRecords
+    }
+
+    static func fetchAllWith(location: Location, modelContext: ModelContext) -> [SymptomRecord] {
+        let locationId = location.id
+        let descriptor = FetchDescriptor<SymptomRecord>(
+            predicate: #Predicate { $0.location?.id == locationId }
         )
 
         let symptomRecords: [SymptomRecord]

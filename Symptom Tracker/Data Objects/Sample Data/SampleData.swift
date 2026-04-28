@@ -25,7 +25,8 @@ class SampleData {
             FoodRecord.self,
             Symptom.self,
             SymptomRecord.self,
-            BowelMovementRecord.self
+            BowelMovementRecord.self,
+            Location.self
         ])
 
         let modelConfiguration = ModelConfiguration(
@@ -55,6 +56,10 @@ class SampleData {
 
         for bowelRecord in SampleBowelMovements.bowelMovementRecords() {
             context.insert(bowelRecord)
+        }
+
+        for location in SampleLocations.locations() {
+            context.insert(location)
         }
     }
 }

@@ -12,6 +12,7 @@ struct SymptomRecordView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State var symptoms: [Symptom]
+    @State var locations: [Location]
 
     var modelContext: ModelContext
     @State var record: SymptomRecord
@@ -21,6 +22,7 @@ struct SymptomRecordView: View {
     @State private var errorMessage = "No Error"
 
     @State private var showAddSymptom = false
+    @State private var showAddLocation = false
 
     init(
         modelId: PersistentIdentifier?,
@@ -33,6 +35,12 @@ struct SymptomRecordView: View {
             symptoms = try modelContext.fetch(Symptom.fetchDescriptor)
         } catch {
             symptoms = []
+        }
+
+        do {
+            locations = try modelContext.fetch(Location.fetchDescriptor)
+        } catch {
+            locations = []
         }
 
         if let modelId {
@@ -123,6 +131,29 @@ struct SymptomRecordView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
+                    Text("Location")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        Picker(selection: $record.location, label: Text("Location")) {
+                            Text("None").tag(Location?(nil))
+                            ForEach(locations, id: \.self) { location in
+                                Text(location.name).tag(location as Location?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, -8)
+                        Button {
+                            showAddLocation = true
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
                     Text("Severity")
                         .fontWeight(.bold)
                         .foregroundStyle(.secondary)
@@ -172,6 +203,18 @@ struct SymptomRecordView: View {
                 }
 
                 record.symptom = modelContext.model(for: newSymptom.id) as? Symptom
+            }
+            .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showAddLocation) {
+            LocationView(modelId: nil, in: modelContext.container) { newLocation in
+                do {
+                    locations = try modelContext.fetch(Location.fetchDescriptor)
+                } catch {
+                    locations = []
+                }
+
+                record.location = modelContext.model(for: newLocation.id) as? Location
             }
             .presentationDetents([.medium])
         }

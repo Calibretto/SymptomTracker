@@ -16,7 +16,8 @@ struct Symptom_TrackerApp: App {
             FoodRecord.self,
             Symptom.self,
             SymptomRecord.self,
-            BowelMovementRecord.self
+            BowelMovementRecord.self,
+            Location.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

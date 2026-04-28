@@ -12,12 +12,20 @@ struct SymptomsTabView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var showSymptoms = false
+    @State private var showLocations = false
     @State private var showRecordSymptom = false
 
     var body: some View {
         VStack {
             HStack {
                 Spacer()
+
+                Button(action: {
+                    showLocations = true
+                }, label: {
+                    Image(systemName: "mappin.circle.fill")
+                        .imageScale(.large)
+                })
 
                 Button(action: {
                     showSymptoms = true
@@ -49,6 +57,10 @@ struct SymptomsTabView: View {
         }
         .sheet(isPresented: $showSymptoms) {
             SymptomsView()
+                .modelContext(modelContext)
+        }
+        .sheet(isPresented: $showLocations) {
+            LocationsView()
                 .modelContext(modelContext)
         }
         .sheet(isPresented: $showRecordSymptom) {
