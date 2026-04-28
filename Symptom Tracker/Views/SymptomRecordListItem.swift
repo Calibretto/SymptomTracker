@@ -11,9 +11,16 @@ struct SymptomRecordListItem: View {
 
     var record: SymptomRecord
 
+    private var severityColor: Color {
+        let hue = 0.33 * Double(11 - record.severity) / 10.0
+        return Color(hue: hue, saturation: 0.85, brightness: 0.85)
+    }
+
     var body: some View {
         HStack {
             Text("\(record.severity)")
+                .foregroundStyle(severityColor)
+                .fontWeight(.semibold)
                 .padding(.trailing, 8)
             Text(record.name)
             Spacer()
