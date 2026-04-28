@@ -13,6 +13,12 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
+            TimelineTabView()
+                .tabItem {
+                    Label("Timeline", systemImage: "calendar.day.timeline.left")
+                }
+                .padding(.bottom, 24)
+
             FoodsTabView()
                 .tabItem {
                     Label("Foods", systemImage: "fork.knife.circle")
