@@ -23,12 +23,12 @@ struct SampleFoods {
     static func foodRecords() -> [FoodRecord] {
         let foods = foods()
         return [
-            FoodRecord(food: foods[0], timestamp: Date()),
-            FoodRecord(food: foods[1], timestamp: Date()),
-            FoodRecord(food: foods[2], timestamp: Date()),
-            FoodRecord(food: foods[3], timestamp: Date()),
-            FoodRecord(food: foods[4], timestamp: Calendar.current.date(byAdding: .day, value: 4, to: Date()) ?? Date()),
-            FoodRecord(food: foods[5], timestamp: Calendar.current.date(byAdding: .day, value: 2, to: Date()) ?? Date()),
+            FoodRecord(food: foods[0], timestamp: Date.fromShortString("2026-04-01")),
+            FoodRecord(food: foods[1], timestamp: Date.fromShortString("2026-04-01")),
+            FoodRecord(food: foods[2], timestamp: Date.fromShortString("2026-04-02")),
+            FoodRecord(food: foods[3], timestamp: Date.fromShortString("2026-04-02")),
+            FoodRecord(food: foods[4], timestamp: Date.fromShortString("2026-04-10")),
+            FoodRecord(food: foods[5], timestamp: Date.fromShortString("2026-04-10")),
         ]
     }
 

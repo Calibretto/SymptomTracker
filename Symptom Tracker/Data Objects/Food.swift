@@ -52,10 +52,10 @@ class FoodRecord {
     }
 
     var dateKey: String {
-        let calendar = Calendar.current
-        let dateComponents = calendar.dateComponents([.year, .month, .day], from: timestamp)
-
-        return "\(dateComponents.year!)/\(dateComponents.month!)/\(dateComponents.day!)"
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        dateFormatter.dateFormat = "yyyy/MM/dd"
+        return dateFormatter.string(from: timestamp)
     }
 
     var time: String {
