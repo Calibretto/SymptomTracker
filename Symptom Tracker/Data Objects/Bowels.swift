@@ -8,8 +8,9 @@
 import Foundation
 import SwiftData
 
-enum BristolScale: UInt, Codable, CaseIterable {
-    case unknown = 0
+enum BristolScale: Int, Codable, CaseIterable {
+    case unknown = -1
+    case wind = 0
     case severeConstipation = 1
     case mildConstipation = 2
     case normal_cracked = 3
@@ -20,8 +21,10 @@ enum BristolScale: UInt, Codable, CaseIterable {
 
     var name: String {
         switch self {
-        case.unknown:
+        case .unknown:
             return "Unknown"
+        case.wind:
+            return "Wind"
         case .severeConstipation:
             return "Severe Constipation"
         case .mildConstipation:
