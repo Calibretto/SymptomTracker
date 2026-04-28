@@ -14,8 +14,9 @@ enum BristolScale: UInt, Codable, CaseIterable {
     case mildConstipation = 2
     case normal_cracked = 3
     case normal_smooth = 4
-    case mildDiarrhoea = 5
-    case severeDiarrhoea = 6
+    case lacking_fibre = 5
+    case mildDiarrhoea = 6
+    case severeDiarrhoea = 7
 
     var name: String {
         switch self {
@@ -29,6 +30,8 @@ enum BristolScale: UInt, Codable, CaseIterable {
             return "Normal (Cracked)"
         case .normal_smooth:
             return "Normal (Smooth)"
+        case .lacking_fibre:
+            return "Lacking Fibre"
         case .mildDiarrhoea:
             return "Mild Diarrhoea"
         case .severeDiarrhoea:
