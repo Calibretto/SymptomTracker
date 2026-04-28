@@ -22,11 +22,6 @@ struct FoodRecordView: View {
 
     @State private var showAddFood = false
 
-    let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
     init(
         modelId: PersistentIdentifier?,
         in container: ModelContainer
@@ -82,18 +77,53 @@ struct FoodRecordView: View {
                 Text("Food Record")
                     .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 16)
             .padding(.top, 24)
             .padding(.bottom, 12)
 
             Spacer()
 
-            LazyVGrid(columns: columns) {
-                SelectFoodRow(value: $foodRecord.food, foods: $foods) {
-                    showAddFood = true
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Date")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    DatePicker("", selection: $foodRecord.timestamp)
+                        .labelsHidden()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                DateTimeRow(title: "Date", value: $foodRecord.timestamp)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Food")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        if foods.count > 0 {
+                            Picker(selection: $foodRecord.food, label: Text("Food")) {
+                                ForEach(foods, id: \.self) { food in
+                                    Text(food.name).tag(food)
+                                }
+                                Divider().tag(Food?(nil))
+                            }
+                            .onAppear {
+                                if foodRecord.food == nil {
+                                    foodRecord.food = foods.first
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, -8)
+                        }
+                        Button {
+                            showAddFood = true
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
 
             Spacer()
 
@@ -111,6 +141,7 @@ struct FoodRecordView: View {
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 64)
         }
+        .padding(.horizontal, 16)
         .padding(.bottom, 24)
         .alert("Error", isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }

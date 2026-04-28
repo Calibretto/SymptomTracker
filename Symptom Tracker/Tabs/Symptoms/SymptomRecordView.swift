@@ -22,11 +22,6 @@ struct SymptomRecordView: View {
 
     @State private var showAddSymptom = false
 
-    let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
     init(
         modelId: PersistentIdentifier?,
         in container: ModelContainer
@@ -82,19 +77,68 @@ struct SymptomRecordView: View {
                 Text("Symptom Record")
                     .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 16)
             .padding(.top, 24)
             .padding(.bottom, 12)
 
             Spacer()
 
-            LazyVGrid(columns: columns) {
-                DateTimeRow(title: "Date", value: $record.timestamp)
-                SelectSymptomRow(value: $record.symptom, symptoms: $symptoms) {
-                    showAddSymptom = true
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Date")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    DatePicker("", selection: $record.timestamp)
+                        .labelsHidden()
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                SelectSeverityRow(value: $record.severity)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Symptom")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        if symptoms.count > 0 {
+                            Picker(selection: $record.symptom, label: Text("Symptom")) {
+                                ForEach(symptoms, id: \.self) { symptom in
+                                    Text(symptom.name).tag(symptom)
+                                }
+                                Divider().tag(Symptom?(nil))
+                            }
+                            .onAppear {
+                                if record.symptom == nil {
+                                    record.symptom = symptoms.first
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, -8)
+                        }
+                        Button {
+                            showAddSymptom = true
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Severity")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    Picker(selection: $record.severity, label: Text("Severity")) {
+                        ForEach(UInt(1)...UInt(11), id: \.self) { severity in
+                            Text("\(severity)").tag(severity)
+                        }
+                        Divider().tag(UInt(99))
+                    }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, -8)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
 
             Spacer()
 
@@ -112,6 +156,7 @@ struct SymptomRecordView: View {
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 64)
         }
+        .padding(.horizontal, 16)
         .padding(.bottom, 24)
         .alert("Error", isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }
