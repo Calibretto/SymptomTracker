@@ -14,6 +14,8 @@ struct Symptom_TrackerApp: App {
         let schema = Schema([
             Food.self,
             FoodRecord.self,
+            Drink.self,
+            DrinkRecord.self,
             Symptom.self,
             SymptomRecord.self,
             BowelMovementRecord.self,

@@ -23,6 +23,8 @@ class SampleData {
         let schema = Schema([
             Food.self,
             FoodRecord.self,
+            Drink.self,
+            DrinkRecord.self,
             Symptom.self,
             SymptomRecord.self,
             BowelMovementRecord.self,
@@ -48,6 +50,10 @@ class SampleData {
     private func insertSampleData() {
         for foodRecord in SampleFoods.foodRecords() {
             context.insert(foodRecord)
+        }
+
+        for drinkRecord in SampleDrinks.drinkRecords() {
+            context.insert(drinkRecord)
         }
 
         for symptomRecord in SampleSymptoms.symptomRecords() {

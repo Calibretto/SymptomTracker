@@ -13,6 +13,8 @@ struct ItemsTabView: View {
 
     @State private var showFoodRecords = false
     @State private var showFoods = false
+    @State private var showDrinkRecords = false
+    @State private var showDrinks = false
     @State private var showSymptomRecords = false
     @State private var showSymptoms = false
     @State private var showLocations = false
@@ -23,6 +25,10 @@ struct ItemsTabView: View {
             Section("Food") {
                 ItemRow(title: "Recorded Food") { showFoodRecords = true }
                 ItemRow(title: "Foods") { showFoods = true }
+            }
+            Section("Drinks") {
+                ItemRow(title: "Recorded Drinks") { showDrinkRecords = true }
+                ItemRow(title: "Drinks") { showDrinks = true }
             }
             Section("Symptoms") {
                 ItemRow(title: "Recorded Symptoms") { showSymptomRecords = true }
@@ -38,6 +44,13 @@ struct ItemsTabView: View {
         }
         .sheet(isPresented: $showFoods) {
             FoodsView()
+                .modelContext(modelContext)
+        }
+        .sheet(isPresented: $showDrinkRecords) {
+            DrinkRecordsSheetView()
+        }
+        .sheet(isPresented: $showDrinks) {
+            DrinksView()
                 .modelContext(modelContext)
         }
         .sheet(isPresented: $showSymptomRecords) {
@@ -109,6 +122,44 @@ private struct FoodRecordsSheetView: View {
         .padding(.bottom, 24)
         .sheet(isPresented: $showAddRecord) {
             FoodRecordView(modelId: nil, in: modelContext.container)
+        }
+    }
+}
+
+private struct DrinkRecordsSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @State private var showAddRecord = false
+
+    var body: some View {
+        VStack {
+            HStack {
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.foreground)
+                }
+                Spacer()
+            }
+            .overlay {
+                Text("Recorded Drinks")
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
+
+            DrinkRecordsView()
+
+            Button { showAddRecord = true } label: {
+                Text("Record Drink")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 64)
+        }
+        .padding(.bottom, 24)
+        .sheet(isPresented: $showAddRecord) {
+            DrinkRecordView(modelId: nil, in: modelContext.container)
         }
     }
 }

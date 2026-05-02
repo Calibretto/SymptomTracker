@@ -12,6 +12,7 @@ struct TimelineTabView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var showRecordFood = false
+    @State private var showRecordDrink = false
     @State private var showRecordSymptom = false
     @State private var showRecordBowel = false
 
@@ -31,6 +32,11 @@ struct TimelineTabView: View {
                     showRecordFood = true
                 } label: {
                     Label("Food", systemImage: "fork.knife.circle")
+                }
+                Button {
+                    showRecordDrink = true
+                } label: {
+                    Label("Drink", systemImage: "cup.and.saucer")
                 }
                 Button {
                     showRecordSymptom = true
@@ -53,6 +59,9 @@ struct TimelineTabView: View {
         }
         .sheet(isPresented: $showRecordFood) {
             FoodRecordView(modelId: nil, in: modelContext.container)
+        }
+        .sheet(isPresented: $showRecordDrink) {
+            DrinkRecordView(modelId: nil, in: modelContext.container)
         }
         .sheet(isPresented: $showRecordSymptom) {
             SymptomRecordView(modelId: nil, in: modelContext.container)

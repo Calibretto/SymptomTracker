@@ -10,12 +10,14 @@ import SwiftUI
 
 enum TimelineEntry: Identifiable {
     case food(FoodRecord)
+    case drink(DrinkRecord)
     case symptom(SymptomRecord)
     case bowel(BowelMovementRecord)
 
     var id: ObjectIdentifier {
         switch self {
         case .food(let r): return ObjectIdentifier(r)
+        case .drink(let r): return ObjectIdentifier(r)
         case .symptom(let r): return ObjectIdentifier(r)
         case .bowel(let r): return ObjectIdentifier(r)
         }
@@ -24,6 +26,7 @@ enum TimelineEntry: Identifiable {
     var timestamp: Date {
         switch self {
         case .food(let r): return r.timestamp
+        case .drink(let r): return r.timestamp
         case .symptom(let r): return r.timestamp
         case .bowel(let r): return r.timestamp
         }
@@ -32,6 +35,7 @@ enum TimelineEntry: Identifiable {
     var dateKey: String {
         switch self {
         case .food(let r): return r.dateKey
+        case .drink(let r): return r.dateKey
         case .symptom(let r): return r.dateKey
         case .bowel(let r): return r.dateKey
         }
@@ -41,10 +45,12 @@ enum TimelineEntry: Identifiable {
 struct TimelineView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \FoodRecord.timestamp, order: .reverse) var foodRecords: [FoodRecord]
+    @Query(sort: \DrinkRecord.timestamp, order: .reverse) var drinkRecords: [DrinkRecord]
     @Query(sort: \SymptomRecord.timestamp, order: .reverse) var symptomRecords: [SymptomRecord]
     @Query(sort: \BowelMovementRecord.timestamp, order: .reverse) var bowelRecords: [BowelMovementRecord]
 
     @State private var selectedFoodRecord: FoodRecord?
+    @State private var selectedDrinkRecord: DrinkRecord?
     @State private var selectedSymptomRecord: SymptomRecord?
     @State private var selectedBowelRecord: BowelMovementRecord?
 
@@ -52,6 +58,7 @@ struct TimelineView: View {
         var sections: [String: [TimelineEntry]] = [:]
 
         foodRecords.forEach { sections[$0.dateKey, default: []].append(.food($0)) }
+        drinkRecords.forEach { sections[$0.dateKey, default: []].append(.drink($0)) }
         symptomRecords.forEach { sections[$0.dateKey, default: []].append(.symptom($0)) }
         bowelRecords.forEach { sections[$0.dateKey, default: []].append(.bowel($0)) }
 
@@ -65,6 +72,7 @@ struct TimelineView: View {
     func delete(_ entry: TimelineEntry) {
         switch entry {
         case .food(let r): modelContext.delete(r)
+        case .drink(let r): modelContext.delete(r)
         case .symptom(let r): modelContext.delete(r)
         case .bowel(let r): modelContext.delete(r)
         }
@@ -86,6 +94,13 @@ struct TimelineView: View {
                                         FoodRecordListItem(foodRecord: record)
                                     }
                                     .onTapGesture { selectedFoodRecord = record }
+                                case .drink(let record):
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "cup.and.saucer")
+                                            .foregroundStyle(.secondary)
+                                        DrinkRecordListItem(drinkRecord: record)
+                                    }
+                                    .onTapGesture { selectedDrinkRecord = record }
                                 case .symptom(let record):
                                     HStack(spacing: 8) {
                                         Image(systemName: "waveform.path.ecg")
@@ -114,6 +129,9 @@ struct TimelineView: View {
         }
         .sheet(item: $selectedFoodRecord) { record in
             FoodRecordView(modelId: record.id, in: modelContext.container)
+        }
+        .sheet(item: $selectedDrinkRecord) { record in
+            DrinkRecordView(modelId: record.id, in: modelContext.container)
         }
         .sheet(item: $selectedSymptomRecord) { record in
             SymptomRecordView(modelId: record.id, in: modelContext.container)
