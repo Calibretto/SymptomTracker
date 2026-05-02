@@ -15,6 +15,8 @@ struct ItemsTabView: View {
     @State private var showFoods = false
     @State private var showDrinkRecords = false
     @State private var showDrinks = false
+    @State private var showMedicineRecords = false
+    @State private var showMedicines = false
     @State private var showSymptomRecords = false
     @State private var showSymptoms = false
     @State private var showLocations = false
@@ -29,6 +31,10 @@ struct ItemsTabView: View {
             Section("Drinks") {
                 ItemRow(title: "Recorded Drinks") { showDrinkRecords = true }
                 ItemRow(title: "Drinks") { showDrinks = true }
+            }
+            Section("Medicine") {
+                ItemRow(title: "Recorded Medicines") { showMedicineRecords = true }
+                ItemRow(title: "Medicines") { showMedicines = true }
             }
             Section("Symptoms") {
                 ItemRow(title: "Recorded Symptoms") { showSymptomRecords = true }
@@ -51,6 +57,13 @@ struct ItemsTabView: View {
         }
         .sheet(isPresented: $showDrinks) {
             DrinksView()
+                .modelContext(modelContext)
+        }
+        .sheet(isPresented: $showMedicineRecords) {
+            MedicineRecordsSheetView()
+        }
+        .sheet(isPresented: $showMedicines) {
+            MedicinesView()
                 .modelContext(modelContext)
         }
         .sheet(isPresented: $showSymptomRecords) {
@@ -160,6 +173,44 @@ private struct DrinkRecordsSheetView: View {
         .padding(.bottom, 24)
         .sheet(isPresented: $showAddRecord) {
             DrinkRecordView(modelId: nil, in: modelContext.container)
+        }
+    }
+}
+
+private struct MedicineRecordsSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @State private var showAddRecord = false
+
+    var body: some View {
+        VStack {
+            HStack {
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.foreground)
+                }
+                Spacer()
+            }
+            .overlay {
+                Text("Recorded Medicines")
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
+
+            MedicineRecordsView()
+
+            Button { showAddRecord = true } label: {
+                Text("Record Medicine")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 64)
+        }
+        .padding(.bottom, 24)
+        .sheet(isPresented: $showAddRecord) {
+            MedicineRecordView(modelId: nil, in: modelContext.container)
         }
     }
 }

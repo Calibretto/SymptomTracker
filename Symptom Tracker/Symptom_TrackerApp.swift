@@ -16,6 +16,8 @@ struct Symptom_TrackerApp: App {
             FoodRecord.self,
             Drink.self,
             DrinkRecord.self,
+            Medicine.self,
+            MedicineRecord.self,
             Symptom.self,
             SymptomRecord.self,
             BowelMovementRecord.self,

@@ -25,6 +25,8 @@ class SampleData {
             FoodRecord.self,
             Drink.self,
             DrinkRecord.self,
+            Medicine.self,
+            MedicineRecord.self,
             Symptom.self,
             SymptomRecord.self,
             BowelMovementRecord.self,
@@ -54,6 +56,10 @@ class SampleData {
 
         for drinkRecord in SampleDrinks.drinkRecords() {
             context.insert(drinkRecord)
+        }
+
+        for medicineRecord in SampleMedicines.medicineRecords() {
+            context.insert(medicineRecord)
         }
 
         for symptomRecord in SampleSymptoms.symptomRecords() {

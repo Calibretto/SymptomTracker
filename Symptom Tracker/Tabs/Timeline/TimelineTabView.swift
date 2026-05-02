@@ -13,6 +13,7 @@ struct TimelineTabView: View {
 
     @State private var showRecordFood = false
     @State private var showRecordDrink = false
+    @State private var showRecordMedicine = false
     @State private var showRecordSymptom = false
     @State private var showRecordBowel = false
 
@@ -39,6 +40,11 @@ struct TimelineTabView: View {
                     Label("Drink", systemImage: "cup.and.saucer")
                 }
                 Button {
+                    showRecordMedicine = true
+                } label: {
+                    Label("Medicine", systemImage: "pills")
+                }
+                Button {
                     showRecordSymptom = true
                 } label: {
                     Label("Symptom", systemImage: "waveform.path.ecg")
@@ -62,6 +68,9 @@ struct TimelineTabView: View {
         }
         .sheet(isPresented: $showRecordDrink) {
             DrinkRecordView(modelId: nil, in: modelContext.container)
+        }
+        .sheet(isPresented: $showRecordMedicine) {
+            MedicineRecordView(modelId: nil, in: modelContext.container)
         }
         .sheet(isPresented: $showRecordSymptom) {
             SymptomRecordView(modelId: nil, in: modelContext.container)
