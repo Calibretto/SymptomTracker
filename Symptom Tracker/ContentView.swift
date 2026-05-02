@@ -19,21 +19,9 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 24)
 
-            FoodsTabView()
+            ItemsTabView()
                 .tabItem {
-                    Label("Foods", systemImage: "fork.knife.circle")
-                }
-                .padding(.bottom, 24)
-
-            SymptomsTabView()
-                .tabItem {
-                    Label("Symptoms", systemImage: "waveform.path.ecg.text.clipboard")
-                }
-                .padding(.bottom, 24)
-
-            BowelsTabView()
-                .tabItem {
-                    Label("Bowels", systemImage: "toilet")
+                    Label("Items", systemImage: "list.bullet")
                 }
                 .padding(.bottom, 24)
         }
