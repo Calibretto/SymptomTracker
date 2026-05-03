@@ -11,6 +11,7 @@ import SwiftData
 struct TimelineTabView: View {
     @Environment(\.modelContext) private var modelContext
 
+    @State private var showAddFromFavourites = false
     @State private var showRecordFood = false
     @State private var showRecordDrink = false
     @State private var showRecordMedicine = false
@@ -29,6 +30,11 @@ struct TimelineTabView: View {
             }
 
             Menu {
+                Button {
+                    showAddFromFavourites = true
+                } label: {
+                    Label("From Favourites", systemImage: "star.circle")
+                }
                 Button {
                     showRecordFood = true
                 } label: {
@@ -62,6 +68,10 @@ struct TimelineTabView: View {
             }
             .padding(.trailing, 24)
             .padding(.bottom, 12)
+        }
+        .sheet(isPresented: $showAddFromFavourites) {
+            AddFromFavouritesView()
+                .modelContext(modelContext)
         }
         .sheet(isPresented: $showRecordFood) {
             FoodRecordView(modelId: nil, in: modelContext.container)
