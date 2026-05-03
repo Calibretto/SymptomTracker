@@ -15,6 +15,11 @@ struct FoodRecordListItem: View {
         HStack {
             Text(foodRecord.name)
             Spacer()
+            if foodRecord.isFavourite {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundStyle(.yellow)
+            }
             Text(foodRecord.time)
         }
     }

@@ -72,6 +72,12 @@ struct DrinkRecordView: View {
                         .foregroundStyle(.foreground)
                 }
                 Spacer()
+                Button {
+                    drinkRecord.isFavourite.toggle()
+                } label: {
+                    Image(systemName: drinkRecord.isFavourite ? "star.fill" : "star")
+                        .foregroundStyle(drinkRecord.isFavourite ? .yellow : .secondary)
+                }
             }
             .overlay {
                 Text("Drink Record")

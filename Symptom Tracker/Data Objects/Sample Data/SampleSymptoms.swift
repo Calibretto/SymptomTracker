@@ -26,7 +26,7 @@ struct SampleSymptoms {
             SymptomRecord(symptom: symptoms[1], severity: 6, timestamp: Date.fromShortString("2026-04-02")),
             SymptomRecord(symptom: symptoms[2], severity: 8, timestamp: Date.fromShortString("2026-04-02")),
             SymptomRecord(symptom: symptoms[2], severity: 10, timestamp: Date.fromShortString("2026-04-10")),
-            SymptomRecord(symptom: symptoms[3], severity: 3, timestamp: Date.fromShortString("2026-04-10")),
+            SymptomRecord(symptom: symptoms[3], severity: 3, timestamp: Date.fromShortString("2026-04-10"), isFavourite: true),
         ]
     }
 }

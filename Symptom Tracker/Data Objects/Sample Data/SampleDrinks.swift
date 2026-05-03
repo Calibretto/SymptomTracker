@@ -21,7 +21,7 @@ struct SampleDrinks {
     static func drinkRecords() -> [DrinkRecord] {
         let drinks = drinks()
         return [
-            DrinkRecord(drink: drinks[0], timestamp: Date.fromShortString("2026-04-01")),
+            DrinkRecord(drink: drinks[0], timestamp: Date.fromShortString("2026-04-01"), isFavourite: true),
             DrinkRecord(drink: drinks[1], timestamp: Date.fromShortString("2026-04-01")),
             DrinkRecord(drink: drinks[2], timestamp: Date.fromShortString("2026-04-02")),
             DrinkRecord(drink: drinks[3], timestamp: Date.fromShortString("2026-04-10")),

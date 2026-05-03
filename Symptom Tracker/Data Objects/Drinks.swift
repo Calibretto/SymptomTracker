@@ -38,10 +38,12 @@ extension Drink {
 class DrinkRecord {
     var drink: Drink?
     var timestamp: Date
+    var isFavourite: Bool
 
-    init(drink: Drink?, timestamp: Date) {
+    init(drink: Drink?, timestamp: Date, isFavourite: Bool = false) {
         self.drink = drink
         self.timestamp = timestamp
+        self.isFavourite = isFavourite
     }
 
     var name: String {

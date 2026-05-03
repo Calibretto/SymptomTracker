@@ -50,11 +50,14 @@ class MedicineRecord {
     var amount: Double
     var unit: MedicineUnit
 
-    init(medicine: Medicine?, timestamp: Date, amount: Double, unit: MedicineUnit) {
+    var isFavourite: Bool
+
+    init(medicine: Medicine?, timestamp: Date, amount: Double, unit: MedicineUnit, isFavourite: Bool = false) {
         self.medicine = medicine
         self.timestamp = timestamp
         self.amount = amount
         self.unit = unit
+        self.isFavourite = isFavourite
     }
 
     var name: String {

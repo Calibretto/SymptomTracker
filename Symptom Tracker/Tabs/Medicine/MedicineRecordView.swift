@@ -72,6 +72,12 @@ struct MedicineRecordView: View {
                         .foregroundStyle(.foreground)
                 }
                 Spacer()
+                Button {
+                    record.isFavourite.toggle()
+                } label: {
+                    Image(systemName: record.isFavourite ? "star.fill" : "star")
+                        .foregroundStyle(record.isFavourite ? .yellow : .secondary)
+                }
             }
             .overlay {
                 Text("Medicine Record")

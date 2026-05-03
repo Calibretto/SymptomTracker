@@ -31,6 +31,11 @@ struct SymptomRecordListItem: View {
                 }
             }
             Spacer()
+            if record.isFavourite {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundStyle(.yellow)
+            }
             Text(record.time)
         }
     }

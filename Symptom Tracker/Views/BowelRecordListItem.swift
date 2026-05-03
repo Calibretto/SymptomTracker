@@ -17,6 +17,11 @@ struct BowelRecordListItem: View {
                 .padding(.trailing, 8)
             Text(record.name)
             Spacer()
+            if record.isFavourite {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundStyle(.yellow)
+            }
             Text(record.time)
         }
     }

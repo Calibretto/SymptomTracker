@@ -102,6 +102,7 @@ struct FoodRecordView: View {
     private var isNew: Bool
 
     @State private var selectedFoods: [Food] = []
+    @State private var isFavourite: Bool
 
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
@@ -125,13 +126,16 @@ struct FoodRecordView: View {
             if let foodRecord = modelContext.model(for: modelId) as? FoodRecord {
                 self.foodRecord = foodRecord
                 isNew = false
+                _isFavourite = State(initialValue: foodRecord.isFavourite)
             } else {
                 foodRecord = FoodRecord.new(food: nil)
                 isNew = true
+                _isFavourite = State(initialValue: false)
             }
         } else {
             foodRecord = FoodRecord.new(food: nil)
             isNew = true
+            _isFavourite = State(initialValue: false)
         }
     }
 
@@ -139,9 +143,11 @@ struct FoodRecordView: View {
         do {
             if isNew {
                 for food in selectedFoods {
-                    let record = FoodRecord(food: food, timestamp: foodRecord.timestamp)
+                    let record = FoodRecord(food: food, timestamp: foodRecord.timestamp, isFavourite: isFavourite)
                     modelContext.insert(record)
                 }
+            } else {
+                foodRecord.isFavourite = isFavourite
             }
             try modelContext.save()
             dismiss()
@@ -161,6 +167,12 @@ struct FoodRecordView: View {
                         .foregroundStyle(.foreground)
                 }
                 Spacer()
+                Button {
+                    isFavourite.toggle()
+                } label: {
+                    Image(systemName: isFavourite ? "star.fill" : "star")
+                        .foregroundStyle(isFavourite ? .yellow : .secondary)
+                }
             }
             .overlay {
                 Text("Food Record")

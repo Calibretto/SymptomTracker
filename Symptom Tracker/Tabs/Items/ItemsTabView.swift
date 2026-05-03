@@ -11,6 +11,7 @@ import SwiftUI
 struct ItemsTabView: View {
     @Environment(\.modelContext) private var modelContext
 
+    @State private var showFavourites = false
     @State private var showFoodRecords = false
     @State private var showFoods = false
     @State private var showIngredients = false
@@ -25,6 +26,7 @@ struct ItemsTabView: View {
 
     var body: some View {
         List {
+            ItemRow(title: "Favourites") { showFavourites = true }
             Section("Food") {
                 ItemRow(title: "Recorded Food") { showFoodRecords = true }
                 ItemRow(title: "Foods") { showFoods = true }
@@ -46,6 +48,10 @@ struct ItemsTabView: View {
             Section("Bowel Movements") {
                 ItemRow(title: "Recorded Bowel Movements") { showBowelRecords = true }
             }
+        }
+        .sheet(isPresented: $showFavourites) {
+            FavouritesView()
+                .modelContext(modelContext)
         }
         .sheet(isPresented: $showFoodRecords) {
             FoodRecordsSheetView()

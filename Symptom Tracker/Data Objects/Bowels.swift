@@ -48,9 +48,12 @@ class BowelMovementRecord {
     var scale: BristolScale
     var timestamp: Date
 
-    init(scale: BristolScale, timestamp: Date) {
+    var isFavourite: Bool
+
+    init(scale: BristolScale, timestamp: Date, isFavourite: Bool = false) {
         self.scale = scale
         self.timestamp = timestamp
+        self.isFavourite = isFavourite
     }
 
     var name: String {

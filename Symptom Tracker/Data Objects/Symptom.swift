@@ -44,11 +44,14 @@ class SymptomRecord {
     var timestamp: Date
     var location: Location?
 
-    init(symptom: Symptom?, severity: UInt, timestamp: Date, location: Location? = nil) {
+    var isFavourite: Bool
+
+    init(symptom: Symptom?, severity: UInt, timestamp: Date, location: Location? = nil, isFavourite: Bool = false) {
         self.symptom = symptom
         self.severity = severity
         self.timestamp = timestamp
         self.location = location
+        self.isFavourite = isFavourite
     }
 
     var name: String {

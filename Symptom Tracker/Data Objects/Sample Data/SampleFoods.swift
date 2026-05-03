@@ -25,7 +25,7 @@ struct SampleFoods {
         return [
             FoodRecord(food: foods[0], timestamp: Date.fromShortString("2026-04-01")),
             FoodRecord(food: foods[1], timestamp: Date.fromShortString("2026-04-01")),
-            FoodRecord(food: foods[2], timestamp: Date.fromShortString("2026-04-02")),
+            FoodRecord(food: foods[2], timestamp: Date.fromShortString("2026-04-02"), isFavourite: true),
             FoodRecord(food: foods[3], timestamp: Date.fromShortString("2026-04-02")),
             FoodRecord(food: foods[4], timestamp: Date.fromShortString("2026-04-10")),
             FoodRecord(food: foods[5], timestamp: Date.fromShortString("2026-04-10")),

@@ -58,10 +58,12 @@ extension Food {
 class FoodRecord {
     var food: Food?
     var timestamp: Date
+    var isFavourite: Bool
 
-    init(food: Food?, timestamp: Date) {
+    init(food: Food?, timestamp: Date, isFavourite: Bool = false) {
         self.food = food
         self.timestamp = timestamp
+        self.isFavourite = isFavourite
     }
 
     var name: String {

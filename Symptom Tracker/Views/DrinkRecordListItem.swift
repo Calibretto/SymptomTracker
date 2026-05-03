@@ -15,6 +15,11 @@ struct DrinkRecordListItem: View {
         HStack {
             Text(drinkRecord.name)
             Spacer()
+            if drinkRecord.isFavourite {
+                Image(systemName: "star.fill")
+                    .font(.caption)
+                    .foregroundStyle(.yellow)
+            }
             Text(drinkRecord.time)
         }
     }
