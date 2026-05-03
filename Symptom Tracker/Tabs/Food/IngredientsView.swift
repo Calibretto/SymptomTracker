@@ -60,7 +60,15 @@ struct IngredientsView: View {
                     Button {
                         selectedIngredient = ingredient
                     } label: {
-                        Text(ingredient.name)
+                        HStack {
+                            Text(ingredient.name)
+                            Spacer()
+                            if ingredient.isAllergen {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                    .font(.caption)
+                            }
+                        }
                     }
                     .swipeActions {
                         Button("Delete", role: .destructive) {

@@ -77,17 +77,24 @@ struct IngredientView: View {
 
             Spacer()
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Name")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
-                TextField("Enter a name...", text: $ingredient.name)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Name")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    TextField("Enter a name...", text: $ingredient.name)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                }
+                Toggle(isOn: $ingredient.isAllergen) {
+                    Text("Allergen")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 32)

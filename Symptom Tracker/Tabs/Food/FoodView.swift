@@ -20,7 +20,7 @@ private struct AddIngredientSheet: View {
 
     var filtered: [String] {
         allIngredients
-            .filter { !alreadyAdded.contains($0) }
+            .filter { name in !alreadyAdded.contains(where: { $0.localizedCaseInsensitiveCompare(name) == .orderedSame }) }
             .filter { searchText.isEmpty || $0.localizedCaseInsensitiveContains(searchText) }
     }
 
@@ -28,7 +28,8 @@ private struct AddIngredientSheet: View {
 
     var canCreateNew: Bool {
         !trimmed.isEmpty &&
-        !allIngredients.contains(where: { $0.localizedCaseInsensitiveCompare(trimmed) == .orderedSame })
+        !allIngredients.contains(where: { $0.localizedCaseInsensitiveCompare(trimmed) == .orderedSame }) &&
+        !alreadyAdded.contains(where: { $0.localizedCaseInsensitiveCompare(trimmed) == .orderedSame })
     }
 
     var body: some View {
@@ -110,6 +111,8 @@ struct FoodView: View {
     @State private var errorMessage = "No Error"
     @State private var ingredientNames: [String]
     @State private var showAddIngredient = false
+    @State private var showDuplicateAlert = false
+    @State private var duplicateIngredientName = ""
 
     init(
         modelId: PersistentIdentifier?,
@@ -264,9 +267,19 @@ struct FoodView: View {
                 container: container,
                 alreadyAdded: ingredientNames
             ) { name in
-                ingredientNames.append(name)
+                if ingredientNames.contains(where: { $0.localizedCaseInsensitiveCompare(name) == .orderedSame }) {
+                    duplicateIngredientName = name
+                    showDuplicateAlert = true
+                } else {
+                    ingredientNames.append(name)
+                }
             }
             .presentationDetents([.medium, .large])
+        }
+        .alert("Already Added", isPresented: $showDuplicateAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("\"\(duplicateIngredientName)\" is already an ingredient of this food.")
         }
     }
 }

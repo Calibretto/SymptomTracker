@@ -11,9 +11,11 @@ import SwiftData
 @Model
 class Ingredient {
     var name: String
+    var isAllergen: Bool
 
-    init(name: String) {
+    init(name: String, isAllergen: Bool = false) {
         self.name = name
+        self.isAllergen = isAllergen
     }
 
     static var fetchDescriptor: FetchDescriptor<Ingredient> {
