@@ -27,10 +27,12 @@ class Ingredient {
 class Food {
     var name: String
     var ingredients: [Ingredient]
+    var imageData: Data?
 
-    init(name: String, ingredients: [Ingredient] = []) {
+    init(name: String, ingredients: [Ingredient] = [], imageData: Data? = nil) {
         self.name = name
         self.ingredients = ingredients
+        self.imageData = imageData
     }
 }
 

@@ -5,8 +5,76 @@
 //  Created by Brian Hackett on 26/03/2026.
 //
 
+import PhotosUI
 import SwiftData
 import SwiftUI
+
+private struct PhotoLibraryPicker: UIViewControllerRepresentable {
+    @Binding var imageData: Data?
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: PhotoLibraryPicker
+        init(_ parent: PhotoLibraryPicker) { self.parent = parent }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            parent.dismiss()
+            guard let result = results.first else { return }
+            result.itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                if let image = object as? UIImage {
+                    DispatchQueue.main.async {
+                        self.parent.imageData = image.jpegData(compressionQuality: 0.8)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct CameraPicker: UIViewControllerRepresentable {
+    @Binding var imageData: Data?
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraPicker
+        init(_ parent: CameraPicker) { self.parent = parent }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.imageData = image.jpegData(compressionQuality: 0.8)
+            }
+            parent.dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
+        }
+    }
+}
 
 private struct AddIngredientSheet: View {
 
@@ -113,6 +181,13 @@ struct FoodView: View {
     @State private var showAddIngredient = false
     @State private var showDuplicateAlert = false
     @State private var duplicateIngredientName = ""
+    @State private var showImageSourcePicker = false
+    @State private var showingCamera = false
+    @State private var showingPhotoPicker = false
+
+    private var imageDataBinding: Binding<Data?> {
+        Binding(get: { food.imageData }, set: { food.imageData = $0 })
+    }
 
     init(
         modelId: PersistentIdentifier?,
@@ -189,6 +264,40 @@ struct FoodView: View {
             .padding(.bottom, 12)
 
             VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Photo")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    Button {
+                        showImageSourcePicker = true
+                    } label: {
+                        if let data = food.imageData, let uiImage = UIImage(data: data) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 160)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        } else {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(.systemGray6))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 160)
+                                .overlay {
+                                    VStack(spacing: 8) {
+                                        Image(systemName: "camera")
+                                            .font(.title2)
+                                        Text("Add Photo")
+                                            .font(.subheadline)
+                                    }
+                                    .foregroundStyle(.secondary)
+                                }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Name")
                         .fontWeight(.bold)
@@ -281,6 +390,21 @@ struct FoodView: View {
         } message: {
             Text("\"\(duplicateIngredientName)\" is already an ingredient of this food.")
         }
+        .confirmationDialog("Photo", isPresented: $showImageSourcePicker) {
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button("Camera") { showingCamera = true }
+            }
+            Button("Photo Library") { showingPhotoPicker = true }
+            if food.imageData != nil {
+                Button("Remove Photo", role: .destructive) { food.imageData = nil }
+            }
+        }
+        .sheet(isPresented: $showingCamera) {
+            CameraPicker(imageData: imageDataBinding)
+        }
+        .sheet(isPresented: $showingPhotoPicker) {
+            PhotoLibraryPicker(imageData: imageDataBinding)
+        }
     }
 }
 
@@ -311,6 +435,6 @@ struct FoodView: View {
     }
     .sheet(isPresented: $sheetOpen) {
         FoodView(modelId: foods.first?.id, in: container)
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
     }
 }

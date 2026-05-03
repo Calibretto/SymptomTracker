@@ -87,7 +87,7 @@ private struct FoodPickerSheet: View {
                 onSelect(newFood.persistentModelID)
                 dismiss()
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
         }
     }
 }
@@ -297,7 +297,7 @@ struct FoodRecordView: View {
                 }
                 foodRecord.food = modelContext.model(for: newFood.id) as? Food
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
         }
     }
 }
