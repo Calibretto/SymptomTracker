@@ -185,54 +185,58 @@ struct FoodView: View {
             .padding(.top, 24)
             .padding(.bottom, 12)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Name")
-                            .fontWeight(.bold)
-                            .foregroundStyle(.secondary)
-                        TextField("Enter a name...", text: $food.name)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Name")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    TextField("Enter a name...", text: $food.name)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                    Button {
+                        showAddIngredient = true
+                    } label: {
+                        Label("Add ingredient", systemImage: "plus.circle")
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(.top, 4)
+                }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Ingredients")
-                            .fontWeight(.bold)
-                            .foregroundStyle(.secondary)
-                        ForEach(ingredientNames.indices, id: \.self) { index in
-                            HStack {
-                                Text(ingredientNames[index])
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding()
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(Color.gray, lineWidth: 1)
-                                    )
-                                Button {
-                                    ingredientNames.remove(at: index)
-                                } label: {
-                                    Image(systemName: "minus.circle")
-                                        .foregroundStyle(.red)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Ingredients")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.secondary)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(ingredientNames.indices, id: \.self) { index in
+                                HStack {
+                                    Text(ingredientNames[index])
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding()
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .stroke(Color.gray, lineWidth: 1)
+                                        )
+                                    Button {
+                                        ingredientNames.remove(at: index)
+                                    } label: {
+                                        Image(systemName: "minus.circle")
+                                            .foregroundStyle(.red)
+                                    }
                                 }
                             }
                         }
-                        Button {
-                            showAddIngredient = true
-                        } label: {
-                            Label("Add ingredient", systemImage: "plus.circle")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 16)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+
+            Spacer()
 
             Button(action: {
                 save()
