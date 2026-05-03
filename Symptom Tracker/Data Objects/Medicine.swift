@@ -48,15 +48,19 @@ class MedicineRecord {
     var medicine: Medicine?
     var timestamp: Date
     var amount: Double
-    var unit: MedicineUnit
-
+    var unitRaw: String
     var isFavourite: Bool
+
+    var unit: MedicineUnit {
+        get { MedicineUnit(rawValue: unitRaw) ?? .mg }
+        set { unitRaw = newValue.rawValue }
+    }
 
     init(medicine: Medicine?, timestamp: Date, amount: Double, unit: MedicineUnit, isFavourite: Bool = false) {
         self.medicine = medicine
         self.timestamp = timestamp
         self.amount = amount
-        self.unit = unit
+        self.unitRaw = unit.rawValue
         self.isFavourite = isFavourite
     }
 
