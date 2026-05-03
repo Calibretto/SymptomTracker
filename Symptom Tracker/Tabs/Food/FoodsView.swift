@@ -84,11 +84,11 @@ struct FoodsView: View {
         }
         .sheet(item: $selectedFood) { food in
             FoodView(modelId: food.id, in: modelContext.container)
-                .presentationDetents([.medium])
+                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $addFood) {
             FoodView(modelId: nil, in: modelContext.container)
-                .presentationDetents([.medium])
+                .presentationDetents([.medium, .large])
         }
         .alert("Delete?", isPresented: $showDeleteAlert) {
             Button("Yes", role: .destructive) {

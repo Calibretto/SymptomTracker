@@ -158,7 +158,7 @@ struct FoodRecordView: View {
 
                 foodRecord.food = modelContext.model(for: newFood.id) as? Food
             }
-            .presentationDetents([.medium])
+            .presentationDetents([.medium, .large])
         }
     }
 }

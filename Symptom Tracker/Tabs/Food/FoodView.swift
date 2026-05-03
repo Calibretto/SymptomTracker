@@ -294,6 +294,6 @@ struct FoodView: View {
     }
     .sheet(isPresented: $sheetOpen) {
         FoodView(modelId: foods.first?.id, in: container)
-            .presentationDetents([.medium])
+            .presentationDetents([.medium, .large])
     }
 }
