@@ -418,7 +418,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.brianhackett.symptomtracker;
 				PRODUCT_NAME = "Allergy Symptom Tracker";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -454,7 +454,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.brianhackett.symptomtracker;
 				PRODUCT_NAME = "Allergy Symptom Tracker";
 				PROVISIONING_PROFILE_SPECIFIER = "";

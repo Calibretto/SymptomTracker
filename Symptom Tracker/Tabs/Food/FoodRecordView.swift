@@ -8,6 +8,90 @@
 import SwiftData
 import SwiftUI
 
+private struct FoodPickerSheet: View {
+
+    let container: ModelContainer
+    let alreadySelectedIds: [PersistentIdentifier]
+    let onSelect: (PersistentIdentifier) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+    @State private var allFoods: [Food] = []
+    @State private var showCreateFood = false
+
+    var filtered: [Food] {
+        allFoods
+            .filter { !alreadySelectedIds.contains($0.persistentModelID) }
+            .filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.foreground)
+                }
+                Spacer()
+            }
+            .overlay {
+                Text("Add Food")
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.top, 24)
+            .padding(.bottom, 12)
+            .padding(.horizontal, 16)
+
+            TextField("Search...", text: $searchText)
+                .padding()
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.gray, lineWidth: 1))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(filtered, id: \.self) { food in
+                        Button {
+                            onSelect(food.persistentModelID)
+                            dismiss()
+                        } label: {
+                            Text(food.name)
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                        }
+                        Divider()
+                    }
+                }
+            }
+
+            Button {
+                showCreateFood = true
+            } label: {
+                Label("Create New Food", systemImage: "plus")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 64)
+            .padding(.vertical, 16)
+        }
+        .onAppear {
+            allFoods = (try? container.mainContext.fetch(Food.fetchDescriptor)) ?? []
+        }
+        .sheet(isPresented: $showCreateFood) {
+            FoodView(modelId: nil, in: container) { newFood in
+                allFoods = (try? container.mainContext.fetch(Food.fetchDescriptor)) ?? []
+                onSelect(newFood.persistentModelID)
+                dismiss()
+            }
+            .presentationDetents([.medium, .large])
+        }
+    }
+}
+
 struct FoodRecordView: View {
 
     @Environment(\.dismiss) private var dismiss
@@ -17,10 +101,12 @@ struct FoodRecordView: View {
     @State var foodRecord: FoodRecord
     private var isNew: Bool
 
+    @State private var selectedFoods: [Food] = []
+
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
-
-    @State private var showAddFood = false
+    @State private var showFoodPicker = false
+    @State private var showCreateFood = false
 
     init(
         modelId: PersistentIdentifier?,
@@ -52,7 +138,10 @@ struct FoodRecordView: View {
     func save() {
         do {
             if isNew {
-                modelContext.insert(foodRecord)
+                for food in selectedFoods {
+                    let record = FoodRecord(food: food, timestamp: foodRecord.timestamp)
+                    modelContext.insert(record)
+                }
             }
             try modelContext.save()
             dismiss()
@@ -91,35 +180,62 @@ struct FoodRecordView: View {
                         .labelsHidden()
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Food")
                         .fontWeight(.bold)
                         .foregroundStyle(.secondary)
-                    HStack {
-                        if foods.count > 0 {
-                            Picker(selection: $foodRecord.food, label: Text("Food")) {
-                                ForEach(foods, id: \.self) { food in
-                                    Text(food.name).tag(food)
+
+                    if isNew {
+                        ForEach(selectedFoods, id: \.persistentModelID) { food in
+                            HStack {
+                                Text(food.name)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(Color.gray, lineWidth: 1)
+                                    )
+                                Button {
+                                    selectedFoods.removeAll { $0.persistentModelID == food.persistentModelID }
+                                } label: {
+                                    Image(systemName: "minus.circle")
+                                        .foregroundStyle(.red)
                                 }
-                                Divider().tag(Food?(nil))
                             }
-                            .onAppear {
-                                if foodRecord.food == nil {
-                                    foodRecord.food = foods.first
-                                }
-                            }
-                            .pickerStyle(.menu)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, -8)
                         }
                         Button {
-                            showAddFood = true
+                            showFoodPicker = true
                         } label: {
-                            Image(systemName: "plus.circle")
+                            Label("Add food", systemImage: "plus.circle")
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                    } else {
+                        HStack {
+                            if foods.count > 0 {
+                                Picker(selection: $foodRecord.food, label: Text("Food")) {
+                                    ForEach(foods, id: \.self) { food in
+                                        Text(food.name).tag(food)
+                                    }
+                                    Divider().tag(Food?(nil))
+                                }
+                                .onAppear {
+                                    if foodRecord.food == nil {
+                                        foodRecord.food = foods.first
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, -8)
+                            }
+                            Button {
+                                showCreateFood = true
+                            } label: {
+                                Image(systemName: "plus.circle")
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -138,6 +254,7 @@ struct FoodRecordView: View {
                         .frame(maxWidth: .infinity)
                 }
             })
+            .disabled(isNew && selectedFoods.isEmpty)
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 64)
         }
@@ -148,14 +265,24 @@ struct FoodRecordView: View {
         } message: {
             Text(errorMessage)
         }
-        .sheet(isPresented: $showAddFood) {
+        .sheet(isPresented: $showFoodPicker) {
+            FoodPickerSheet(
+                container: modelContext.container,
+                alreadySelectedIds: selectedFoods.map(\.persistentModelID)
+            ) { foodId in
+                if let food = modelContext.model(for: foodId) as? Food {
+                    selectedFoods.append(food)
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showCreateFood) {
             FoodView(modelId: nil, in: modelContext.container) { newFood in
                 do {
                     foods = try modelContext.fetch(Food.fetchDescriptor)
                 } catch {
                     foods = []
                 }
-
                 foodRecord.food = modelContext.model(for: newFood.id) as? Food
             }
             .presentationDetents([.medium, .large])
