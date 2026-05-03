@@ -21,6 +21,7 @@ class SampleData {
 
     private init() {
         let schema = Schema([
+            Ingredient.self,
             Food.self,
             FoodRecord.self,
             Drink.self,
@@ -85,4 +86,14 @@ extension SampleData: PreviewModifier {
     func body(content: Content, context: ModelContainer) -> some View {
         content.modelContainer(context)
     }
- }
+}
+
+extension ModelContext {
+    var sqliteCommand: String {
+        if let url = container.configurations.first?.url.path(percentEncoded: false) {
+            "sqlite3 \"\(url)\""
+        } else {
+            "No SQLite database found."
+        }
+    }
+}

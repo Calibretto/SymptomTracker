@@ -20,6 +20,8 @@ struct FoodView: View {
 
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
+    @State private var ingredientNames: [String]
+    @State private var newIngredientName = ""
 
     init(
         modelId: PersistentIdentifier?,
@@ -32,13 +34,16 @@ struct FoodView: View {
             if let food = modelContext.model(for: modelId) as? Food {
                 self.food = food
                 isNew = false
+                _ingredientNames = State(initialValue: food.ingredients.map { $0.name }.sorted())
             } else {
                 food = Food.empty()
                 isNew = true
+                _ingredientNames = State(initialValue: [])
             }
         } else {
             food = Food.empty()
             isNew = true
+            _ingredientNames = State(initialValue: [])
         }
 
         self.addedAction = addedAction
@@ -46,11 +51,25 @@ struct FoodView: View {
 
     func save() {
         do {
+            let existingIngredients = (try? modelContext.fetch(Ingredient.fetchDescriptor)) ?? []
+            let existingByName = Dictionary(uniqueKeysWithValues: existingIngredients.map { ($0.name, $0) })
+
+            var newIngredients: [Ingredient] = []
+            for name in ingredientNames where !name.isEmpty {
+                if let existing = existingByName[name] {
+                    newIngredients.append(existing)
+                } else {
+                    let ingredient = Ingredient(name: name)
+                    modelContext.insert(ingredient)
+                    newIngredients.append(ingredient)
+                }
+            }
+            food.ingredients = newIngredients
+
             if isNew {
                 modelContext.insert(food)
             }
             try modelContext.save()
-
             addedAction?(food)
             dismiss()
         } catch {
@@ -77,24 +96,66 @@ struct FoodView: View {
             .padding(.top, 24)
             .padding(.bottom, 12)
 
-            Spacer()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Name")
+                            .fontWeight(.bold)
+                            .foregroundStyle(.secondary)
+                        TextField("Enter a name...", text: $food.name)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Name")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.secondary)
-                TextField("Enter a name...", text: $food.name)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Ingredients")
+                            .fontWeight(.bold)
+                            .foregroundStyle(.secondary)
+                        ForEach(ingredientNames.indices, id: \.self) { index in
+                            HStack {
+                                Text(ingredientNames[index])
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(Color.gray, lineWidth: 1)
+                                    )
+                                Button {
+                                    ingredientNames.remove(at: index)
+                                } label: {
+                                    Image(systemName: "minus.circle")
+                                        .foregroundStyle(.red)
+                                }
+                            }
+                        }
+                        HStack {
+                            TextField("Add ingredient...", text: $newIngredientName)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                )
+                            Button {
+                                let trimmed = newIngredientName.trimmingCharacters(in: .whitespaces)
+                                if !trimmed.isEmpty {
+                                    ingredientNames.append(trimmed)
+                                    newIngredientName = ""
+                                }
+                            } label: {
+                                Image(systemName: "plus.circle")
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 16)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 32)
-
-            Spacer()
 
             Button(action: {
                 save()
@@ -121,9 +182,9 @@ struct FoodView: View {
 }
 
 #Preview("View Only - Existing") {
-    @Previewable @Bindable var food: Food = SampleFoods.foods()[0]
-
-    FoodView(modelId: food.id, in: SampleData.shared.modelContainer)
+    let container = SampleData.shared.modelContainer
+    let foods = (try? container.mainContext.fetch(Food.fetchDescriptor)) ?? []
+    FoodView(modelId: foods.first?.id, in: container)
 }
 
 #Preview("View Only - New") {
@@ -132,7 +193,8 @@ struct FoodView: View {
 
 #Preview("Sheet - Existing") {
     @Previewable @State var sheetOpen = false
-    @Previewable @Bindable var food: Food = SampleFoods.foods()[0]
+    let container = SampleData.shared.modelContainer
+    let foods = (try? container.mainContext.fetch(Food.fetchDescriptor)) ?? []
 
     VStack {
         Spacer()
@@ -145,7 +207,7 @@ struct FoodView: View {
         Spacer()
     }
     .sheet(isPresented: $sheetOpen) {
-        FoodView(modelId: food.id, in: SampleData.shared.modelContainer)
+        FoodView(modelId: foods.first?.id, in: container)
             .presentationDetents([.medium])
     }
 }

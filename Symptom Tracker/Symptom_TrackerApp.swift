@@ -12,6 +12,7 @@ import SwiftData
 struct Symptom_TrackerApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
+            Ingredient.self,
             Food.self,
             FoodRecord.self,
             Drink.self,

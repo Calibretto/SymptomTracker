@@ -9,11 +9,26 @@ import Foundation
 import SwiftData
 
 @Model
-class Food {
+class Ingredient {
     var name: String
-    
+
     init(name: String) {
         self.name = name
+    }
+
+    static var fetchDescriptor: FetchDescriptor<Ingredient> {
+        FetchDescriptor<Ingredient>(sortBy: [.init(\.name)])
+    }
+}
+
+@Model
+class Food {
+    var name: String
+    var ingredients: [Ingredient]
+
+    init(name: String, ingredients: [Ingredient] = []) {
+        self.name = name
+        self.ingredients = ingredients
     }
 }
 

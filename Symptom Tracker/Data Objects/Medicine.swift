@@ -9,10 +9,10 @@ import Foundation
 import SwiftData
 
 enum MedicineUnit: String, Codable, CaseIterable {
-    case mg
-    case ml
-    case tablet
-    case unit
+    case mg = "mg"
+    case ml = "ml"
+    case tablet = "tablet"
+    case unit = "unit"
 
     var displayName: String { rawValue }
 }

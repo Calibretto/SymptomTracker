@@ -11,12 +11,12 @@ struct SampleFoods {
 
     static func foods() -> [Food] {
         [
-            Food(name: "Food 1"),
-            Food(name: "Food 2"),
-            Food(name: "Food 3"),
-            Food(name: "Food 4"),
-            Food(name: "Food 5"),
-            Food(name: "Food 6")
+            Food(name: "Food 1", ingredients: [Ingredient(name: "Ingredient 1")]),
+            Food(name: "Food 2", ingredients: [Ingredient(name: "Ingredient 2")]),
+            Food(name: "Food 3", ingredients: [Ingredient(name: "Ingredient 3")]),
+            Food(name: "Food 4", ingredients: [Ingredient(name: "Ingredient 4")]),
+            Food(name: "Food 5", ingredients: [Ingredient(name: "Ingredient 5")]),
+            Food(name: "Food 6", ingredients: [Ingredient(name: "Ingredient 6")])
         ]
     }
 
