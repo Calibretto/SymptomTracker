@@ -28,6 +28,7 @@ struct BowelRecordsView: View {
     func delete(_ bowelRecord: BowelMovementRecord?) {
         if let bowelRecord {
             modelContext.delete(bowelRecord)
+            try? modelContext.save()
         }
     }
 

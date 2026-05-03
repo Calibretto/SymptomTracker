@@ -31,6 +31,7 @@ struct LocationsView: View {
                     record.location = nil
                 }
                 modelContext.delete(location)
+                try? modelContext.save()
             }
         }
     }

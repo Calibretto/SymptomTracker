@@ -28,6 +28,7 @@ struct SymptomRecordsView: View {
     func delete(_ symptomRecord: SymptomRecord?) {
         if let symptomRecord {
             modelContext.delete(symptomRecord)
+            try? modelContext.save()
         }
     }
 

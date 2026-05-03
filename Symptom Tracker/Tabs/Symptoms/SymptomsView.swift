@@ -31,6 +31,7 @@ struct SymptomsView: View {
                     modelContext.delete(record)
                 }
                 modelContext.delete(symptom)
+                try? modelContext.save()
             }
         }
     }

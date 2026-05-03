@@ -28,6 +28,7 @@ struct DrinkRecordsView: View {
     func delete(_ drinkRecord: DrinkRecord?) {
         if let drinkRecord {
             modelContext.delete(drinkRecord)
+            try? modelContext.save()
         }
     }
 

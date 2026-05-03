@@ -13,6 +13,7 @@ struct ItemsTabView: View {
 
     @State private var showFoodRecords = false
     @State private var showFoods = false
+    @State private var showIngredients = false
     @State private var showDrinkRecords = false
     @State private var showDrinks = false
     @State private var showMedicineRecords = false
@@ -27,6 +28,7 @@ struct ItemsTabView: View {
             Section("Food") {
                 ItemRow(title: "Recorded Food") { showFoodRecords = true }
                 ItemRow(title: "Foods") { showFoods = true }
+                ItemRow(title: "Ingredients") { showIngredients = true }
             }
             Section("Drinks") {
                 ItemRow(title: "Recorded Drinks") { showDrinkRecords = true }
@@ -50,6 +52,10 @@ struct ItemsTabView: View {
         }
         .sheet(isPresented: $showFoods) {
             FoodsView()
+                .modelContext(modelContext)
+        }
+        .sheet(isPresented: $showIngredients) {
+            IngredientsView()
                 .modelContext(modelContext)
         }
         .sheet(isPresented: $showDrinkRecords) {

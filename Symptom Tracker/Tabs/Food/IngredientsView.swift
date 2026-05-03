@@ -1,38 +1,36 @@
 //
-//  MedicinesView.swift
+//  IngredientsView.swift
 //  Symptom Tracker
 //
-//  Created by Brian Hackett on 02/05/2026.
+//  Created by Brian Hackett on 03/05/2026.
 //
 
 import SwiftData
 import SwiftUI
 
-struct MedicinesView: View {
+struct IngredientsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Medicine.name)]) var medicines: [Medicine]
+    @Query(sort: [SortDescriptor(\Ingredient.name)]) var ingredients: [Ingredient]
 
-    @State var selectedMedicine: Medicine? = nil
-    @State var medicineToDelete: Medicine? = nil
-    @State var addMedicine: Bool = false
+    @State var selectedIngredient: Ingredient? = nil
+    @State var ingredientToDelete: Ingredient? = nil
+    @State var addIngredient: Bool = false
     @State var showDeleteAlert: Bool = false
 
-    func confirmDelete(_ medicine: Medicine?) {
-        medicineToDelete = medicine
+    func confirmDelete(_ ingredient: Ingredient?) {
+        ingredientToDelete = ingredient
         showDeleteAlert = true
     }
 
-    func delete(_ medicine: Medicine?) {
-        if let medicine {
-            try? modelContext.transaction {
-                let records = MedicineRecord.fetchAllWith(medicine: medicine, modelContext: modelContext)
-                for record in records {
-                    modelContext.delete(record)
-                }
-                modelContext.delete(medicine)
-                try? modelContext.save()
+    func delete(_ ingredient: Ingredient?) {
+        if let ingredient {
+            let foods = (try? modelContext.fetch(FetchDescriptor<Food>())) ?? []
+            for food in foods {
+                food.ingredients.removeAll { $0.persistentModelID == ingredient.persistentModelID }
             }
+            modelContext.delete(ingredient)
+            try? modelContext.save()
         }
     }
 
@@ -48,7 +46,7 @@ struct MedicinesView: View {
                 Spacer()
             }
             .overlay {
-                Text("Medicines")
+                Text("Ingredients")
                     .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, 16)
@@ -58,15 +56,15 @@ struct MedicinesView: View {
             Spacer()
 
             List {
-                ForEach(medicines, id: \.self) { medicine in
+                ForEach(ingredients, id: \.self) { ingredient in
                     Button {
-                        selectedMedicine = medicine
+                        selectedIngredient = ingredient
                     } label: {
-                        Text(medicine.name)
+                        Text(ingredient.name)
                     }
                     .swipeActions {
                         Button("Delete", role: .destructive) {
-                            confirmDelete(medicine)
+                            confirmDelete(ingredient)
                         }
                     }
                 }
@@ -75,36 +73,37 @@ struct MedicinesView: View {
             Spacer()
 
             Button(action: {
-                addMedicine = true
+                addIngredient = true
             }, label: {
-                Text("Add Medicine")
+                Text("Add Ingredient")
                     .frame(maxWidth: .infinity)
             })
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 64)
         }
-        .sheet(item: $selectedMedicine) { medicine in
-            MedicineView(modelId: medicine.id, in: modelContext.container)
+        .padding(.bottom, 24)
+        .sheet(item: $selectedIngredient) { ingredient in
+            IngredientView(modelId: ingredient.id, in: modelContext.container)
                 .presentationDetents([.medium])
         }
-        .sheet(isPresented: $addMedicine) {
-            MedicineView(modelId: nil, in: modelContext.container)
+        .sheet(isPresented: $addIngredient) {
+            IngredientView(modelId: nil, in: modelContext.container)
                 .presentationDetents([.medium])
         }
         .alert("Delete?", isPresented: $showDeleteAlert) {
             Button("Yes", role: .destructive) {
-                delete(medicineToDelete)
+                delete(ingredientToDelete)
             }
             Button("No", role: .cancel) {
-                medicineToDelete = nil
+                ingredientToDelete = nil
             }
         } message: {
-            Text("Are you sure you want to delete this medicine?\n\nThis will also delete any medicine records of this medicine.")
+            Text("Are you sure you want to delete this ingredient?")
         }
     }
 }
 
 #Preview {
-    MedicinesView()
+    IngredientsView()
         .modelContainer(SampleData.shared.modelContainer)
 }

@@ -31,6 +31,7 @@ struct DrinksView: View {
                     modelContext.delete(record)
                 }
                 modelContext.delete(drink)
+                try? modelContext.save()
             }
         }
     }

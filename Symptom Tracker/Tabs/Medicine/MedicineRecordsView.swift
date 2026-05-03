@@ -27,6 +27,7 @@ struct MedicineRecordsView: View {
     func delete(_ record: MedicineRecord?) {
         if let record {
             modelContext.delete(record)
+            try? modelContext.save()
         }
     }
 
