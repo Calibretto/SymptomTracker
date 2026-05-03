@@ -8,11 +8,99 @@
 import SwiftData
 import SwiftUI
 
+private struct AddIngredientSheet: View {
+
+    let container: ModelContainer
+    let alreadyAdded: [String]
+    let onSelect: (String) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+    @State private var allIngredients: [String] = []
+
+    var filtered: [String] {
+        allIngredients
+            .filter { !alreadyAdded.contains($0) }
+            .filter { searchText.isEmpty || $0.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var trimmed: String { searchText.trimmingCharacters(in: .whitespaces) }
+
+    var canCreateNew: Bool {
+        !trimmed.isEmpty &&
+        !allIngredients.contains(where: { $0.localizedCaseInsensitiveCompare(trimmed) == .orderedSame })
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(.foreground)
+                }
+                Spacer()
+            }
+            .overlay {
+                Text("Add Ingredient")
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.top, 24)
+            .padding(.bottom, 12)
+            .padding(.horizontal, 16)
+
+            TextField("Search or type a new name...", text: $searchText)
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    if canCreateNew {
+                        Button {
+                            onSelect(trimmed)
+                            dismiss()
+                        } label: {
+                            Label("Create \"\(trimmed)\"", systemImage: "plus.circle")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                        }
+                        Divider()
+                    }
+                    ForEach(filtered, id: \.self) { name in
+                        Button {
+                            onSelect(name)
+                            dismiss()
+                        } label: {
+                            Text(name)
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                        }
+                        Divider()
+                    }
+                }
+            }
+        }
+        .onAppear {
+            allIngredients = (try? container.mainContext.fetch(Ingredient.fetchDescriptor))?.map(\.name) ?? []
+        }
+    }
+}
+
 struct FoodView: View {
 
     @Environment(\.dismiss) private var dismiss
 
     var modelContext: ModelContext
+    var container: ModelContainer
     @Bindable var food: Food
     var addedAction: ((Food) -> Void)?
 
@@ -21,13 +109,14 @@ struct FoodView: View {
     @State private var showingAlert = false
     @State private var errorMessage = "No Error"
     @State private var ingredientNames: [String]
-    @State private var newIngredientName = ""
+    @State private var showAddIngredient = false
 
     init(
         modelId: PersistentIdentifier?,
         in container: ModelContainer,
         addedAction: ((Food) -> Void)? = nil
     ) {
+        self.container = container
         modelContext = ModelContext(container)
         modelContext.autosaveEnabled = false
         if let modelId {
@@ -132,23 +221,11 @@ struct FoodView: View {
                                 }
                             }
                         }
-                        HStack {
-                            TextField("Add ingredient...", text: $newIngredientName)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                )
-                            Button {
-                                let trimmed = newIngredientName.trimmingCharacters(in: .whitespaces)
-                                if !trimmed.isEmpty {
-                                    ingredientNames.append(trimmed)
-                                    newIngredientName = ""
-                                }
-                            } label: {
-                                Image(systemName: "plus.circle")
-                            }
+                        Button {
+                            showAddIngredient = true
+                        } label: {
+                            Label("Add ingredient", systemImage: "plus.circle")
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
@@ -177,6 +254,15 @@ struct FoodView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .sheet(isPresented: $showAddIngredient) {
+            AddIngredientSheet(
+                container: container,
+                alreadyAdded: ingredientNames
+            ) { name in
+                ingredientNames.append(name)
+            }
+            .presentationDetents([.medium, .large])
         }
     }
 }
